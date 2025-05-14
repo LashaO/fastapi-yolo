@@ -3543,3 +3543,15 @@
 2025-05-14 17:23:30,750 - app.routers.predict_router - INFO - Prediction completed for model_id: msv3
 2025-05-14 17:23:30,751 - app.routers.predict_router - INFO - Running prediction for model_id: msv3
 2025-05-14 17:23:30,775 - app.routers.predict_router - INFO - Prediction completed for model_id: msv3
+2025-05-14 17:44:38,550 - app.main - INFO - Server has started
+2025-05-14 17:44:38,550 - app.utils.yolo_handler - INFO - Loading model with ID: model1, path: yolo11n.pt, device: cuda, image size: 512, confidence: 0.50
+2025-05-14 17:44:40,513 - watchfiles.main - INFO - 1 change detected
+2025-05-14 17:44:45,522 - watchfiles.main - INFO - 3 changes detected
+2025-05-14 17:44:45,934 - watchfiles.main - INFO - 1 change detected
+2025-05-14 17:45:04,700 - app.main - INFO - Server has started
+2025-05-14 17:45:04,700 - app.utils.yolo_handler - INFO - Loading model with ID: model1, path: yolo11n.pt, device: mps, image size: 512, confidence: 0.50
+2025-05-14 17:45:04,861 - app.utils.yolo_handler - INFO - Loading model with ID: msv3, path: https://cthulhu.dyn.wildme.io/public/models/detect.yolov11.msv3.pt, device: mps, image size: 640, confidence: 0.30
+2025-05-14 17:45:07,012 - watchfiles.main - INFO - 1 change detected
+2025-05-14 17:45:26,594 - watchfiles.main - INFO - 3 changes detected
+2025-05-14 17:45:33,673 - watchfiles.main - INFO - 1 change detected
+2025-05-14 17:46:48,420 - watchfiles.main - INFO - 1 change detected

@@ -47,6 +47,14 @@ The response will be in JSON format with prediction results:
    pip install -r requirements.txt
    ```
 
+## Running the Application
+
+To run the FastAPI application with the updated module, use the following command:
+
+```bash
+python -m app.main --host 0.0.0.0 --port 8000 --reload --workers 4 --device mps
+```
+
 4. Run the application:
    ```bash
    uvicorn app.main:app --reload
