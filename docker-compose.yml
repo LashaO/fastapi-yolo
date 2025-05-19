@@ -4,7 +4,7 @@ services:
   fastapi-yolo:
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "6050:6050"
     volumes:
