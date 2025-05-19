@@ -13,12 +13,17 @@ router = APIRouter()
 N = 1
 predict_semaphore = asyncio.Semaphore(N)
 
+from pydantic import BaseModel
+
+class PredictionRequest(BaseModel):
+    model_id: str
+    image_url: Optional[str] = None
+    image_path: Optional[str] = None
+
 @router.post("/")
 async def predict(
     request: Request,
-    model_id: str,
-    image_url: Optional[str] = None,
-    image_path: Optional[str] = None,
+    body: PredictionRequest,
     file: Optional[UploadFile] = File(None)
 ):
     """
