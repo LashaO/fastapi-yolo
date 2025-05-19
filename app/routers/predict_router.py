@@ -13,7 +13,7 @@ router = APIRouter()
 N = 1
 predict_semaphore = asyncio.Semaphore(N)
 
-@router.post("/predict")
+@router.post("/")
 async def predict(
     request: Request,
     model_id: str,
