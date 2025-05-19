@@ -2,7 +2,7 @@
 
 # Test MSV3 model with image URL
 echo "Testing with image URL..."
-curl -X POST "http://localhost:6050/predict" \
+curl -X POST "http://localhost:6050/predict/" \
   -H "accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{
@@ -12,7 +12,7 @@ curl -X POST "http://localhost:6050/predict" \
 
 echo "\nTesting with local image path..."
 # Test with local image path
-curl -X POST "http://localhost:6050/predict" \
+curl -X POST "http://localhost:6050/predict/" \
   -H "accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{
@@ -22,14 +22,14 @@ curl -X POST "http://localhost:6050/predict" \
 
 echo "\nTesting with uploaded file..."
 # Test with file upload
-curl -X POST "http://localhost:6050/predict" \
+curl -X POST "http://localhost:6050/predict/" \
   -H "accept: application/json" \
   -F "model_id=msv3" \
   -F "file=@/path/to/your/local/image.jpg"  # Replace with a real path to your test image
 
 # Performance test with 2 requests
 echo "\nRunning performance test with 2 requests..."
-URL="http://localhost:6050/predict"
+URL="http://localhost:6050/predict/"
 N=2
 
 time (
