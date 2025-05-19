@@ -3,6 +3,7 @@ FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime
 WORKDIR /app
 
 # Install system dependencies
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     python3-pip \
     python3-dev \
@@ -11,6 +12,9 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-dev \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
+
+# Set default timezone
+RUN ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime && echo "Etc/UTC" > /etc/timezone
 
 # Install Python dependencies
 COPY requirements.txt .
