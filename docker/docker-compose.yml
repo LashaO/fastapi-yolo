@@ -14,5 +14,5 @@ services:
       - /root/.config/Ultralytics:/root/.config/Ultralytics
     environment:
       - PYTHONPATH=/app
-    command: python -m uvicorn --app-dir /app app.main:app --host 0.0.0.0 --port 6050 --reload
+    command: python -m uvicorn app.main:app --host 0.0.0.0 --port 6050 --reload
     restart: unless-stopped
