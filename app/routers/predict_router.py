@@ -3,6 +3,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 from typing import Optional
 import httpx
 import asyncio
+from pathlib import Path
 from app.schemas.model_response import ModelResponse
 
 logger = logging.getLogger(__name__)
@@ -17,6 +18,7 @@ async def predict(
     request: Request,
     model_id: str,
     image_url: Optional[str] = None,
+    image_path: Optional[str] = None,
     file: Optional[UploadFile] = File(None)
 ):
     """
@@ -26,12 +28,23 @@ async def predict(
         request (Request): FastAPI request object.
         model_id (str): Identifier of the model to use for prediction.
         image_url (Optional[str], optional): URL of the image to predict. Defaults to None.
+        image_path (Optional[str], optional): Path to a local image file. Defaults to None.
         file (Optional[UploadFile], optional): Uploaded image file. Defaults to None.
 
     Returns:
         ModelResponse: JSON response containing prediction results.
+
+    Raises:
+        HTTPException: If no image source is provided or if image loading fails.
     """
     logger.info("Received prediction request for model_id: %s", model_id)
+    
+    # Validate that at least one image source is provided
+    if not any([image_url, image_path, file]):
+        raise HTTPException(status_code=400, detail="At least one image source (URL, path, or file) must be provided")
+    
+    # Get image bytes based on the provided source
+    image_bytes = None
     
     if image_url:
         logger.info("Downloading image from URL: %s", image_url)
@@ -41,6 +54,21 @@ async def predict(
             logger.error("Failed to download image from URL: %s", image_url)
             raise HTTPException(status_code=400, detail="Failed to download image from URL.")
         image_bytes = response.content
+    
+    elif image_path:
+        logger.info("Loading image from path: %s", image_path)
+        try:
+            # Convert to absolute path
+            image_path = str(Path(image_path).resolve())
+            with open(image_path, 'rb') as f:
+                image_bytes = f.read()
+        except Exception as e:
+            logger.error("Failed to load image from path: %s", image_path)
+            raise HTTPException(status_code=400, detail=f"Failed to load image from path: {str(e)}")
+    
+    elif file:
+        logger.info("Processing uploaded file")
+        image_bytes = await file.read()
     elif file:
         logger.info("Reading uploaded file")
         image_bytes = await file.read()

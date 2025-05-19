@@ -44,7 +44,9 @@ async def startup_event():
     yolo_handler = YOLOHandler()
     
     # Load model configurations from JSON file
-    with open('model_config.json', 'r') as f:
+    import os
+    config_path = os.path.join(os.path.dirname(__file__), 'model_config.json')
+    with open(config_path, 'r') as f:
         config = json.load(f)
 
     logger.info("Server has started")

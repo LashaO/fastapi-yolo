@@ -1,6 +1,5 @@
 from ultralytics import YOLO
-from PIL import Image
-from io import BytesIO
+from .inference import run_inference
 import logging
 
 logger = logging.getLogger(__name__)
@@ -48,6 +47,4 @@ class YOLOHandler:
         imgsz = model_info["imgsz"]
         conf = model_info["conf"]
         
-        img = Image.open(BytesIO(image_bytes))
-        results = model.predict(img, save=False, imgsz=imgsz, conf=conf, device=model.device, verbose=False)
-        return results
+        return run_inference(image_bytes, model, model.device, imgsz, conf)
