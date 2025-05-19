@@ -19,6 +19,9 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+# Mount routers
+app.include_router(predict_router.router)
+
 import argparse
 
 # Set up argument parser
