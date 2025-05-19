@@ -8,12 +8,12 @@ from app.schemas.model_response import ModelResponse
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(prefix="/predict")
 
 N = 1
 predict_semaphore = asyncio.Semaphore(N)
 
-@router.post("/")
+@router.post("")
 async def predict(
     request: Request,
     model_id: str,
