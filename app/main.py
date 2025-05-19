@@ -44,7 +44,7 @@ async def startup_event():
     yolo_handler = YOLOHandler()
     
     # Load model configurations from JSON file
-    with open('app/model_config.json', 'r') as f:
+    with open('model_config.json', 'r') as f:
         config = json.load(f)
 
     logger.info("Server has started")

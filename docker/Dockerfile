@@ -14,7 +14,10 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy model config
+COPY model_config.json .
+
+# Copy application code (from main directory)
 COPY app/ app/
 
 # Expose port
