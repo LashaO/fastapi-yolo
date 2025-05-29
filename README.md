@@ -47,6 +47,26 @@ The response will be in JSON format with prediction results:
    pip install -r requirements.txt
    ```
 
+## Running Tests
+
+To run the test suite, first install the test dependencies:
+
+```bash
+pip install -r requirements-test.txt
+```
+
+Then run the tests with pytest:
+
+```bash
+pytest
+```
+
+This will run all tests in the `tests/` directory. The tests include:
+- Testing the YOLO handler directly with a sample image
+- Testing the FastAPI /predict/ endpoint
+- Testing error cases (invalid URLs, invalid model IDs)
+- Validating the response model
+
 ## Running the Application
 
 To run the FastAPI application with the updated module, use the following command:

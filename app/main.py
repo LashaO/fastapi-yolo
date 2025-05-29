@@ -1,10 +1,15 @@
 import json
-import sys
+import os
 import logging
+import argparse
 from fastapi import FastAPI
 from app.routers import predict_router
 from app.utils.yolo_handler import YOLOHandler
 
+# Initialize FastAPI app
+app = FastAPI()
+
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -16,53 +21,73 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+# Default configuration
+DEFAULT_CONFIG = {
+    'device': 'cpu',
+    'host': '0.0.0.0',
+    'port': 8000,
+    'reload': False,
+    'workers': 1
+}
 
-import argparse
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description='FastAPI YOLO Application')
+    parser.add_argument('--device', type=str, default=DEFAULT_CONFIG['device'], 
+                       help=f'Device to run the model on (e.g., cpu, cuda, mps). Default: {DEFAULT_CONFIG["device"]}')
+    parser.add_argument('--host', type=str, default=DEFAULT_CONFIG['host'],
+                       help=f'Host to run the server on. Default: {DEFAULT_CONFIG["host"]}')
+    parser.add_argument('--port', type=int, default=DEFAULT_CONFIG['port'],
+                       help=f'Port to run the server on. Default: {DEFAULT_CONFIG["port"]}')
+    parser.add_argument('--reload', action='store_true', default=DEFAULT_CONFIG['reload'],
+                       help='Enable auto-reload. Default: False')
+    parser.add_argument('--workers', type=int, default=DEFAULT_CONFIG['workers'],
+                       help=f'Number of worker processes. Default: {DEFAULT_CONFIG["workers"]}')
+    return parser.parse_args()
 
-parser = argparse.ArgumentParser(description='FastAPI YOLO Application')
-parser.add_argument('--device', type=str, default='cpu', help='Device to run the model on (e.g., cpu, cuda, mps)')
-parser.add_argument('--host', type=str, default='0.0.0.0', help='Host to run the server on')
-parser.add_argument('--port', type=int, default=8000, help='Port to run the server on')
-parser.add_argument('--reload', action='store_true', help='Enable auto-reload')
-parser.add_argument('--workers', type=int, default=1, help='Number of worker processes')
-args = parser.parse_args()
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app.main:app", host=args.host, port=args.port, reload=args.reload, workers=args.workers)
-
-@app.on_event("startup")
-async def startup_event():
-    """Initialize the application on startup.
+def configure_app(fastapi_app: FastAPI, device: str = 'cpu') -> None:
+    """Configure the FastAPI application with YOLO models.
     
-    This function is called when the FastAPI application starts up. It performs the following actions:
-    1. Creates a YOLO handler instance
-    2. Loads the model configuration from model_config.json
-    3. Initializes and loads all configured models with the specified device
-    
-    The models are stored in the application state and can be accessed via request.app.state.yolo_handler.
+    Args:
+        fastapi_app: The FastAPI application instance
+        device: Device to load models on (e.g., 'cpu', 'cuda')
     """
     yolo_handler = YOLOHandler()
     
-    import os
     config_path = os.path.join(os.path.dirname(__file__), 'model_config.json')
     with open(config_path, 'r') as f:
         config = json.load(f)
 
-    logger.info("Server has started")
-
-    device = args.device
+    logger.info("Loading models...")
 
     for model_cfg in config["models"]:
         yolo_handler.load_model(
             model_id=model_cfg["model_id"],
             model_path=model_cfg["model_path"],
-            imgsz=model_cfg["imgsz"],
-            conf=model_cfg["conf"],
-            device=device
+            device=device,
+            imgsz=model_cfg.get("imgsz", 640),
+            conf=model_cfg.get("conf", 0.25)
         )
     
-    app.state.yolo_handler = yolo_handler
+    fastapi_app.state.yolo_handler = yolo_handler
 
+# Configure the app with default values when imported
+configure_app(app, device=DEFAULT_CONFIG['device'])
+
+# Include routers
 app.include_router(predict_router.router)
+
+# This will only run when the app is started directly with 'python -m app.main'
+if __name__ == "__main__":
+    args = parse_args()
+    import uvicorn
+    
+    # Reconfigure with command line args
+    configure_app(app, device=args.device)
+    logger.info(f"Server starting on {args.host}:{args.port}")
+    
+    uvicorn.run("app.main:app", 
+                host=args.host, 
+                port=args.port, 
+                reload=args.reload, 
+                workers=args.workers)
